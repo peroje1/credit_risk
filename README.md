@@ -4,6 +4,7 @@
 ---
 
 ## **1. Extract & Load**
+
 - The pipeline extracts data from multiple CSV files
 - Reads input CSV files from the **`data/`** folder:
   - `customer.csv`
@@ -35,7 +36,7 @@
 ---
 
 ### **Docker Mode**
-- 
+
 - To make deployment simple and consistent, the entire project is containerized:
 - A MySQL container hosts the database and initializes schema via sql/01_schema.sql.
 - An App container runs Python scripts automatically after confirming the database is live (wait-for-db.sh).
@@ -144,5 +145,6 @@ app-1 exited with code 0
 ```
 
 ### From then on you can querry the database.
+
 
 
