@@ -17,9 +17,7 @@ def load_all(config: dict):
         "MYSQL_CONNECTION",
         config["mysql_connection"]
     )
-    print("1111111111111")
-    print (MYSQL_CONNECTION)
-    print("1111111111111")
+
     engine = create_engine(MYSQL_CONNECTION)
     calc_date = config["calc_date"]
 

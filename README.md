@@ -4,24 +4,29 @@
 ---
 
 ## **1. Extract & Load**
-
+- The pipeline extracts data from multiple CSV files
 - Reads input CSV files from the **`data/`** folder:
   - `customer.csv`
   - `credit_bureau.csv`
   - `income.csv`
   - `overdue.csv`
 - Loads all files into a **MySQL** database named **`credit_risk`**.
+- `load_data.py` — loads and validates all raw CSVs into MySQL.
+
 - Database schema is defined in **`sql/01_schema.sql`**.
 
 ---
 
 ## **2. Transform & Calculate**
 
-- Cleans and validates raw data.
-- Applies business rules to calculate **risk scores** and **probabilities** for each customer:
+
+- `file_validation.py` Cleans and validates raw data.
+- `calculate.py`— computes credit risk scores using an SQL-based formula.
+- Applies required formulas to calculate **risk scores** and **probabilities** for each customer:
   - Adjusts missing or invalid income (`income = 3000` if none).
   - Uses installment count, overdue days, gender, and other features.
-- Stores the final results in the **`risk_results`** table.
+- `main.py` — does the entire workflow, determines the calculation date automatically, and triggers data load and scoring steps.
+- Stores the final results in the **`risk_results`** table. It contains customer_id, score and probabilty.
 
 ---
 
@@ -30,6 +35,11 @@
 ---
 
 ### **Docker Mode**
+- 
+- To make deployment simple and consistent, the entire project is containerized:
+- A MySQL container hosts the database and initializes schema via sql/01_schema.sql.
+- An App container runs Python scripts automatically after confirming the database is live (wait-for-db.sh).
+- The Docker Compose configuration ensures that the app waits for the MySQL service to become ready before execution, and that the ETL and scoring run automatically upon startup.
 - Runs the full ETL process automatically once.
 - The container exits after completion, but the **MySQL database remains active** for inspection.
 
@@ -43,10 +53,10 @@
 ---
 
 - The MySQL container persists data even after the ETL finishes.
-- To access the database, run the following command in your terminal (note, you should change container name zadatak_petar_nikic-db-1 if it's different on your end):
+- To access the database, run the following command in your terminal :
 
 ```bash
-docker exec -it zadatak_petar_nikic-db-1 mysql -u risk_user -p credit_risk
+docker exec -it credit_risk mysql -u risk_user -p credit_risk
 
 ```
 
@@ -121,21 +131,15 @@ This will do the whole pipeline
 
 Should look like this:
 ```
-app-1  | MySQL is up - executing command
-app-1  | 1111111111111
-app-1  | mysql+pymysql://risk_user:StrongPass123!@db:3306/credit_risk?ssl_disabled=true
-app-1  | 1111111111111
-app-1  | [RUN] Pipeline start for 2024-12-31
-app-1  | 1111111111111
-app-1  | mysql+pymysql://risk_user:StrongPass123!@db:3306/credit_risk?ssl_disabled=true
-app-1  | 1111111111111
-app-1  | [LOAD] customer: 19873 rows for 2024-12-31
-app-1  | [LOAD] credit_bureau: 9838 rows for 2024-12-31
-app-1  | [LOAD] income: 170435 rows for 2024-12-31
-app-1  | [LOAD] overdue: 1978 rows for 2024-12-31
-app-1  | All tables loaded.
-app-1  | [CALC] Model calculation finished and results archived for 2024-12-31.
-app-1  | [RUN] Done.
+app-1        | MySQL is up - executing command
+app-1        | [RUN] Pipeline start for 2024-12-31
+app-1        | [LOAD] customer: 19873 rows for 2024-12-31
+app-1        | [LOAD] credit_bureau: 9838 rows for 2024-12-31
+app-1        | [LOAD] income: 170435 rows for 2024-12-31
+app-1        | [LOAD] overdue: 1978 rows for 2024-12-31
+app-1        | All tables loaded.
+app-1        | [CALC] Model calculation finished and results archived for 2024-12-31.
+app-1        | [RUN] Done.
 app-1 exited with code 0
 ```
 

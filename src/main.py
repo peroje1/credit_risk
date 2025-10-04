@@ -9,10 +9,7 @@ def resolve_mysql_url(cfg):
     if not url:
         print("MYSQL_CONNECTION not provided.", file=sys.stderr)
         sys.exit(2)
-    #debuging
-    print("1111111111111")
-    print(url)
-    print("1111111111111")
+
     return url
 #reads customer_csv, takes the latest value in the 'date'
 def resolve_calc_date(args, cfg):
