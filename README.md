@@ -82,7 +82,7 @@ docker exec -it credit_risk mysql -u risk_user -p credit_risk
 
 - When the pipeline finishes, the app container will exit.
 
--	To inspect the database run inside the docker: docker exec -it <container_name> mysql -u risk_user -p credit_risk (Password: StrongPass123!) Also change the <container_name> in the name of the db.
+-	To inspect the database run inside the docker:  docker exec -it credit_risk mysql -u risk_user -p credit_risk (Password: StrongPass123!)
 From here SQL commands can be used to inspect the database.
 
 # Manual:
@@ -145,6 +145,7 @@ app-1 exited with code 0
 ```
 
 ### From then on you can querry the database.
+
 
 
 
