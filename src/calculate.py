@@ -8,7 +8,7 @@ DELETE FROM risk_results WHERE date = :calc_date;
 
 ## insert calculated credit risk results for each customer on a given calc_date.
 ## the query joins credit_bureau, customer, income (last 3 months), and overdue data
-## to compute a risk score and probability (using a logistic regression formula).
+## to get a risk score and probability (using a logistic regression formula).
 ## the score is based on: gender, installment-to-income ratio, and days past due.
 
 _SQL_INSERT = """

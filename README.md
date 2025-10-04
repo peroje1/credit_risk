@@ -26,7 +26,7 @@
 - Applies required formulas to calculate **risk scores** and **probabilities** for each customer:
   - Adjusts missing or invalid income (`income = 3000` if none).
   - Uses installment count, overdue days, gender, and other features.
-- `main.py` — does the entire workflow, determines the calculation date automatically, and triggers data load and scoring steps.
+- `main.py` — does the entire workflow, determines the calculation date automatically if no date given, and triggers data load and scoring steps.
 - Stores the final results in the **`risk_results`** table. It contains customer_id, score and probabilty.
  #### `calculate.py` Calculates credit risk scores for each customer on a given calculation date (calc_date) using data from four source tables:
 
@@ -45,6 +45,8 @@ The model calculates a risk score and probability for each customer based on:
 
 - Deletes previous results for the selected calc_date from the risk_results table.
 - Recalculates and inserts new results.
+- LEFT JOIN ensures that all customers get a risk score, even if their income or overdue data is missing.
+- `COALESCE()` is used to replace missing (NULL) values with a default, ensuring calculations don’t break when data is unavailable.
 - Exports all results for that date into a CSV file
 ---
 
@@ -75,7 +77,7 @@ The model calculates a risk score and probability for each customer based on:
 
 ```bash
 docker exec -it credit_risk mysql -u risk_user -p credit_risk
-
+if you want specific date use --calc-date YYYY-MM-DD
 ```
 
 # Setup & Run Guide
@@ -143,7 +145,7 @@ Script is located in sql/01_schema.sql
 ```
 5.	## To run the script manually: 
 
- ### In the terminal run the: python -m src.main   
+ ### In the terminal run the: python -m src.main (use --calc-date YYYY-MM-DD for specific date)  
 
 This will do the whole pipeline
 
@@ -162,6 +164,8 @@ app-1 exited with code 0
 ```
 
 ### From then on you can querry the database.
+
+
 
 
 

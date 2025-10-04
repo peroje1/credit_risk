@@ -11,7 +11,7 @@ def resolve_mysql_url(cfg):
         sys.exit(2)
 
     return url
-#reads customer_csv, takes the latest value in the 'date'
+#you can add own date or reads customer_csv, takes the latest value in the 'date'
 def resolve_calc_date(args, cfg):
     if args.calc_date:
         return pd.to_datetime(args.calc_date).date().isoformat()
