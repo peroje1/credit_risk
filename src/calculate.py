@@ -4,6 +4,10 @@ import pandas as pd
 _SQL_DELETE = """
 DELETE FROM risk_results WHERE date = :calc_date;
 """
+##insert calculated credit risk results for each customer on a given calc_date.
+##the query joins credit_bureau, customer, income (last 3 months), and overdue data
+##to compute a risk score and probability (using a logistic function).
+##score is based on: gender, installment-to-income ratio, and days past due.
 
 _SQL_INSERT = """
 INSERT INTO risk_results (date, customer_id, score, probability)
@@ -57,6 +61,7 @@ LEFT JOIN (
     ON dpd.customer_id = cb.customer_id
 WHERE cb.date = :calc_date;
 """
+#run risk model: delete old results and insert new ones for given calc_date
 def run_model(config: dict):
     engine = create_engine(config["mysql_connection"])
     calc_date = pd.to_datetime(config["calc_date"]).strftime("%Y-%m-%d") # must use YYYY-MM-DD format

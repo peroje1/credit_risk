@@ -2,6 +2,7 @@ import pandas as pd
 import os
 from sqlalchemy import create_engine, text
 
+#load df into table, overwrite rows for calc_date and append new data
 def _load_table(df: pd.DataFrame, table: str, engine, calc_date: str):
     df = df.copy()
     df["date"] = pd.to_datetime(calc_date)   #to use only last day of the month for calc
@@ -10,6 +11,7 @@ def _load_table(df: pd.DataFrame, table: str, engine, calc_date: str):
     df.to_sql(table, engine, if_exists="append", index=False)
     print(f"[LOAD] {table}: {len(df)} rows for {calc_date}")
 
+#load all CSV files into MySQL tables for the given calc_date
 def load_all(config: dict):
     MYSQL_CONNECTION = os.getenv(
         "MYSQL_CONNECTION",
