@@ -1,13 +1,15 @@
 from sqlalchemy import create_engine, text
 import pandas as pd
+import os
 
 _SQL_DELETE = """
 DELETE FROM risk_results WHERE date = :calc_date;
 """
-##insert calculated credit risk results for each customer on a given calc_date.
-##the query joins credit_bureau, customer, income (last 3 months), and overdue data
-##to compute a risk score and probability (using a logistic function).
-##score is based on: gender, installment-to-income ratio, and days past due.
+
+## insert calculated credit risk results for each customer on a given calc_date.
+## the query joins credit_bureau, customer, income (last 3 months), and overdue data
+## to compute a risk score and probability (using a logistic regression formula).
+## the score is based on: gender, installment-to-income ratio, and days past due.
 
 _SQL_INSERT = """
 INSERT INTO risk_results (date, customer_id, score, probability)
@@ -61,14 +63,26 @@ LEFT JOIN (
     ON dpd.customer_id = cb.customer_id
 WHERE cb.date = :calc_date;
 """
-#run risk model: delete old results and insert new ones for given calc_date
+
+# run the model: delete old results, insert new ones, and export full results to CSV
 def run_model(config: dict):
     engine = create_engine(config["mysql_connection"])
-    calc_date = pd.to_datetime(config["calc_date"]).strftime("%Y-%m-%d") # must use YYYY-MM-DD format
+    calc_date = pd.to_datetime(config["calc_date"]).strftime("%Y-%m-%d")
+
     with engine.begin() as conn:
-        # we first delete old results
+        # delete old results and insert new ones
         conn.execute(text(_SQL_DELETE), {"calc_date": calc_date})
-        # then add new results
         conn.execute(text(_SQL_INSERT), {"calc_date": calc_date})
 
-    print(f"[CALC] Model calculation finished and results archived for {calc_date}.")
+    # export all results for this date to CSV
+    os.makedirs("results", exist_ok=True)
+    query = f"""
+        SELECT * FROM risk_results 
+        WHERE date = '{calc_date}' 
+        ORDER BY probability DESC;
+    """
+    df = pd.read_sql(query, con=engine)
+    output_path = f"results/risk_results_full_{calc_date}.csv"
+    df.to_csv(output_path, index=False)
+
+    print(f"[CALC] Model calculation finished and results exported to {output_path}.")

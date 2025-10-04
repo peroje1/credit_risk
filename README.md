@@ -21,14 +21,31 @@
 ## **2. Transform & Calculate**
 
 
-- `file_validation.py` Cleans and validates raw data.
+- `file_validation.py` Cleans and validates raw data. Checks for missing values, nulls, incosistencies.
 - `calculate.py`— computes credit risk scores using an SQL-based formula.
 - Applies required formulas to calculate **risk scores** and **probabilities** for each customer:
   - Adjusts missing or invalid income (`income = 3000` if none).
   - Uses installment count, overdue days, gender, and other features.
 - `main.py` — does the entire workflow, determines the calculation date automatically, and triggers data load and scoring steps.
 - Stores the final results in the **`risk_results`** table. It contains customer_id, score and probabilty.
+ #### `calculate.py` Calculates credit risk scores for each customer on a given calculation date (calc_date) using data from four source tables:
 
+- customer — demographic data (gender, birth date)
+- credit_bureau — loan installment information
+- income — income from the last 3 months (salary or pension only)
+- overdue — days past due for late payments
+
+The model calculates a risk score and probability for each customer based on:
+
+- gender (male/female),
+- ratio of installment amount to average income in the past 3 months,
+- number of days past due.
+
+### Steps performed by `calculate.py`
+
+- Deletes previous results for the selected calc_date from the risk_results table.
+- Recalculates and inserts new results.
+- Exports all results for that date into a CSV file
 ---
 
 ## **3. Run Modes**
@@ -145,6 +162,7 @@ app-1 exited with code 0
 ```
 
 ### From then on you can querry the database.
+
 
 
 
