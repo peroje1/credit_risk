@@ -77,8 +77,8 @@ The model calculates a risk score and probability for each customer based on:
 
 ```bash
 docker exec -it credit_risk mysql -u risk_user -p credit_risk
-if you want specific date use --calc-date YYYY-MM-DD
 ```
+(if you want specific date use --calc-date YYYY-MM-DD)
 
 # Setup & Run Guide
 
@@ -164,6 +164,7 @@ app-1 exited with code 0
 ```
 
 ### From then on you can querry the database.
+
 
 
 
