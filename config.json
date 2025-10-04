@@ -1,0 +1,7 @@
+{
+  "customer_csv": "data/customer.csv",
+  "credit_csv": "data/credit_bureau.csv",
+  "income_csv": "data/income.csv",
+  "overdue_csv": "data/overdue.csv",
+  "mysql_connection": "mysql+pymysql://risk_user:StrongPass123!@localhost:3306/credit_risk?ssl_disabled=true"
+}

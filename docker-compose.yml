@@ -1,0 +1,23 @@
+services:
+  db:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: credit_risk
+      MYSQL_USER: risk_user
+      MYSQL_PASSWORD: StrongPass123!
+    ports:
+      - "3306:3306"
+    command: --default-authentication-plugin=mysql_native_password
+    volumes:
+      - ./sql:/docker-entrypoint-initdb.d
+
+  app:
+    build: .
+    depends_on:
+      - db
+    environment:
+      MYSQL_CONNECTION: "mysql+pymysql://risk_user:StrongPass123!@db:3306/credit_risk?ssl_disabled=true"
+    volumes:
+      - .:/app
